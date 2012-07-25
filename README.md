@@ -20,10 +20,12 @@ What does it do for me?
 		This is a simple utility, not intended to be a complete solution.  
 
 Requirements: 
-		* gpg / gpg2
-		* bash
-		* some form of command-line clipboard management tools (xclip linux / pbpaste pbcopy on mac) 
+=============
+		gpg / gpg2
+		bash
+		some form of command-line clipboard management tools (xclip linux / pbpaste pbcopy on mac) 
 Example usage:
+==============
 		
 
 		Create a new entry
