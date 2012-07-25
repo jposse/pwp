@@ -1,0 +1,118 @@
+#!/bin/bash
+#Defaults
+file=~/.pwp/pw.asc
+efile=$file.gpg
+
+#Functions
+function getpwd {
+	head -c500 /dev/urandom | LC_CTYPE=C tr -dc "A-Za-z0-9" | cut -c 1-8
+}
+
+
+#Check to see if action is set
+mode=$1
+site=$2
+user=$3
+pass=$4
+if [ -n $mode ] 
+	then case $mode in
+		"get")
+			echo "Get mode"
+			if [ -z $site ]
+				then echo "You must specify a site (ie. pwp get google)"
+				exit 3
+			fi
+			mode=1
+			;;
+		"set")
+			echo "Set mode"
+			if [ -z $site ]
+				then echo "You must specify a site (ie. pwp set google)"
+				exit 3
+			fi
+			mode=2
+			;;
+		"list")
+			echo "Listing sites"
+			mode=3
+			;;
+		*)
+			echo "You need to specify a valid action: get / set / list"
+			exit 2
+			;;
+	esac
+fi
+if [ -z $mode ]
+	then echo "You need to specify an action (get / set)"
+	exit 2
+fi
+#Check to see gpg is installed
+test=$(gpg --version)
+if [ $? -ne 0 ]
+then
+	echo "You don't have gpg installed"
+	exit 1
+fi
+
+#Check to see if ~/.pwp/pw.asc exist
+if [ -f $efile ]
+then
+	echo "Using $efile"
+else
+	echo "$efile doesn't exist, creating"
+	mkdir ~/.pwp
+	touch $file
+	#Put a salt in file to reduce empty file analysis 
+	echo "*$RANDOM $RANDOM $RANDOM $RANDOM" > $file
+	gpg -e $file
+	rm $file
+fi
+
+#Get mode. 
+if [ $mode -eq 1 ] 
+	then
+	read -p "Enter username (or blank to skip): " user
+	if [ -n "$user" ]
+		then
+		echo "User: $user"
+		lines=$(gpg -d $efile | grep $site | grep $user)
+	else
+		lines=$(gpg -d $efile | grep $site)
+	fi
+	cnt=$(echo "$lines" | wc -l)
+	if [ $cnt -gt 1 ]
+		then 
+		echo "More than one entry found for this site / user combination. Please edit file manually to fix"
+		exit 10
+	fi
+	pass=$(echo $lines | awk '{print $3}')
+	oldclip=$(pbpaste)
+	echo $pass | pbcopy
+	echo "Pass is in buffer for 30 secs"
+	sleep 30
+	echo "Resetting buffer"
+	echo $oldclip | pbcopy
+fi
+
+#Set mode. 
+if [ $mode -eq 2 ]
+	then
+	gpg -d $efile > $file
+	read -p "Enter username: " user
+	read -s -p "Enter password to set / or blank to generate random password: " pass
+	if [ -n "$pass" ]
+		then 
+		echo $site $user $pass >> $file
+	else
+		echo "Generating random password"
+		pass=$(getpwd)
+		echo $site $user $pass >> $file
+	fi
+	gpg -e $file
+	rm $file
+fi
+#List mode.
+if [ $mode -eq 3 ]
+	then
+	gpg -d $efile | awk '{print $1, $2}' | grep -v ^*
+fi
