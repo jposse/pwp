@@ -8,13 +8,14 @@ cfg=$pwphome/pwp.cfg
 
 #Functions
 function getpwd {
-	head -c500 /dev/urandom | LC_CTYPE=C tr -dc "A-Za-z0-9" | cut -c 1-8
+	head -c500 /dev/urandom | LC_CTYPE=C tr -dc "A-Za-z0-9" | cut -c 1-$pw_len
 }
 
 function do_config {
 	echo "Writing config file"
 	read -p "Enter your gpg username: " gpg_user
 	read -p "System Type (1=linux, 2=mac): " sys_type
+	read -p "Max length for randomly generated passwords (ie. 8): " pw_len
 }
 
 function print_usage {
@@ -113,7 +114,8 @@ if [ $mode -eq 1 ]
 	cnt=$(echo "$lines" | wc -l)
 	if [ $cnt -gt 1 ]
 		then 
-		echo "More than one entry found for this site / user combination. Please edit file manually to fix"
+		echo "More than one entry found for this site / username combination."
+		echo "Please run again with different user, or edit file manually using 'pwp edit' to fix"
 		exit 10
 	fi
 	usrname=$(echo "$lines" | awk '{print $2}')
@@ -168,6 +170,7 @@ if [ $mode -eq 5 ]
 	do_config
 	echo "gpg_user=$gpg_user" > $cfg
 	echo "sys_type=$sys_type" >> $cfg
+	echo "pw_len=$pw_len" >> $cfg
 	echo "Checking to see if $efile exist..."
 	if [ -f $efile ]
 	then
