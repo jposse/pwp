@@ -1,7 +1,9 @@
 #!/bin/bash
 #Defaults
-file=~/.pwp/pw.asc
+pwphome=~/.pwp
+file=$pwphome/pwp.asc
 efile=$file.gpg
+cfg=$pwphome/pwp.cfg
 
 #Functions
 function getpwd {
@@ -12,6 +14,21 @@ function do_config {
 	echo "Writing config file"
 	read -p "Enter your gpg username: " gpg_user
 	read -p "System Type (1=linux, 2=mac): " sys_type
+}
+
+function print_usage {
+	echo
+	echo
+	echo "Usage: pwp [command]"
+	echo
+	echo "Command ="
+	echo
+	echo "get:	get a password and put in paste buffer"
+	echo "set:	define a new password (if pw is left blank will be randomly generated)"
+	echo "list:	list all site / usernames in file"
+	echo "config: 	set configuration defaults (note: this must be completed first for pwp to function)"
+	echo "edit:	manually edit pwp file (via vi)"
+	echo
 }
 
 #Check to see if action is set
@@ -45,8 +62,12 @@ if [ -n $mode ]
 			echo "Editing file"
 			mode=4
 			;;
+		"config")
+			echo "Configuring pwp"
+			mode=5
+			;;
 		*)
-			echo "You need to specify a valid action: get / set / list"
+			print_usage	
 			exit 2
 			;;
 	esac
@@ -63,24 +84,6 @@ then
 	exit 1
 fi
 
-#Check to see if ~/.pwp/pw.asc.gpg exist
-if [ -f $efile ]
-then
-	echo "Using $efile"
-else
-	echo "$efile doesn't exist, creating"
-	mkdir ~/.pwp
-	touch $file
-	#Add config file
-	do_config
-	echo "gpg_user=$gpg_user" > ~/.pwp/pwp.cfg
-	echo "sys_type=$sys_type" >> ~/.pwp/pwp.cfg
-	#Put a salt in file to reduce empty file analysis 
-	echo "*$RANDOM $RANDOM $RANDOM $RANDOM" > $file
-	gpg -e -r $gpg_user $file
-	rm $file
-	
-fi
 
 #Read config file
 source ~/.pwp/pwp.cfg
@@ -102,12 +105,15 @@ if [ $mode -eq 1 ]
 		echo "More than one entry found for this site / user combination. Please edit file manually to fix"
 		exit 10
 	fi
-	pass=$(echo $lines | awk '{print $3}')
+	usrname=$(echo "$lines" | awk '{print $2}')
+	pass=$(echo "$lines" | awk '{print $3}')
+	echo 
+	echo "Username for this site is: $usrname"
 	oldclip=$(pbpaste)
-	echo $pass | pbcopy
-	echo "Pass is in buffer for 30 secs"
+	printf "%s" $pass | pbcopy
+	echo "Password is now in clipboard buffer for next 30 secs"
 	sleep 30
-	echo "Resetting buffer"
+	echo "Buffer reset"
 	echo $oldclip | pbcopy
 fi
 
@@ -115,8 +121,10 @@ fi
 if [ $mode -eq 2 ]
 	then
 	gpg -d $efile > $file
-	read -p "Enter username: " user
-	read -s -p "Enter password to set / or blank to generate random password: " pass
+	echo
+	echo
+	read -p "Enter username for this site: " user
+	read -s -p "Enter password to set for this site (or leave blank to generate random password): " pass
 	if [ -n "$pass" ]
 		then 
 		echo $site $user $pass >> $file
@@ -125,7 +133,7 @@ if [ $mode -eq 2 ]
 		pass=$(getpwd)
 		echo $site $user $pass >> $file
 	fi
-	gpg -e $file
+	gpg -e --yes -r $gpg_user $file
 	rm $file
 fi
 #List mode.
@@ -138,6 +146,27 @@ if [ $mode -eq 4 ]
 	then
 	gpg -d $efile > $file
 	vi $file
-	gpg -e $file
+	gpg -e --yes -r $gpg_user $file
 	rm $file
+fi
+#Config mode.
+if [ $mode -eq 5 ]
+	then
+	#Add config file
+	do_config
+	echo "gpg_user=$gpg_user" > $cfg
+	echo "sys_type=$sys_type" >> $cfg
+	echo "Checking to see if $efile exist..."
+	if [ -f $efile ]
+	then
+		echo "pwp file already exist."
+	else
+		echo "$efile doesn't exist, creating"
+		mkdir ~/.pwp
+		touch $file
+		#Put a salt in file to reduce empty file analysis 
+		echo "*$RANDOM $RANDOM $RANDOM $RANDOM" > $file
+		gpg -e --yes -r $gpg_user $file
+		rm $file
+	fi
 fi

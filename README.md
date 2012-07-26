@@ -22,7 +22,7 @@ What does it do for me?
 Requirements: 
 =============
 		gpg / gpg2
-		bash / posix system
+		bash / posix system (specifically, you will need: read, head, cut, tr, printf, /dev/urandom, awk)
 		vi
 		some form of command-line clipboard management tools (xclip linux / pbpaste pbcopy on mac) 
 Example usage:
