@@ -1,5 +1,6 @@
 #!/bin/bash
 #Defaults
+#shopt -s expand_aliases
 pwphome=~/.pwp
 file=$pwphome/pwp.asc
 efile=$file.gpg
@@ -34,8 +35,6 @@ function print_usage {
 #Check to see if action is set
 mode=$1
 site=$2
-user=$3
-pass=$4
 if [ -n $mode ] 
 	then case $mode in
 		"get")
@@ -87,7 +86,19 @@ fi
 
 #Read config file
 source ~/.pwp/pwp.cfg
-
+if [ $sys_type -eq 1 ]
+	then 
+	#linux
+	clipcopy="xclip -selection clipboard"
+	clippaste="xclip -o -selection clipboard"
+fi
+if [ $sys_type -eq 2 ]
+	then
+	#mac
+	echo "Setting mode as Mac"
+	clipcopy="pbcopy"
+	clippaste="pbpaste"
+fi	
 #Get mode. 
 if [ $mode -eq 1 ] 
 	then
@@ -109,12 +120,12 @@ if [ $mode -eq 1 ]
 	pass=$(echo "$lines" | awk '{print $3}')
 	echo 
 	echo "Username for this site is: $usrname"
-	oldclip=$(pbpaste)
-	printf "%s" $pass | pbcopy
+	oldclip=$(eval $clippaste)
+	printf "%s" $pass | eval $clipcopy
 	echo "Password is now in clipboard buffer for next 30 secs"
 	sleep 30
 	echo "Buffer reset"
-	echo $oldclip | pbcopy
+	echo $oldclip | eval $clipcopy
 fi
 
 #Set mode. 
