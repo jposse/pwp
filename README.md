@@ -67,4 +67,11 @@ Installation Instructions
 		5. Add entries (either by "pwp set" or directly via "pwp edit")
 		6. Test by using "pwp get" on one of your entries and see if it works correctly with clipboard
 
+Credits
+========
+
+		Original idea by tr0lltherapy of reddit. See thread here: 
+
+		http://www.reddit.com/r/programming/comments/x0nzz/very_simple_nononsense_password_manager_that_uses/c5i7ekn
+
 
