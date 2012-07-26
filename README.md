@@ -19,6 +19,13 @@ What does it do for me?
 
 		This is a simple utility, not intended to be a complete solution.  
 
+Features:
+==========
+		Works on linux / mac / solaris
+		Simple operation
+		Just a bash script: you can easily verify not doing anything shady with your information 
+		
+
 Requirements: 
 =============
 		gpg / gpg2
