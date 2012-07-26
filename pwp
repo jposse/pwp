@@ -5,6 +5,7 @@ pwphome=~/.pwp
 file=$pwphome/pwp.asc
 efile=$file.gpg
 cfg=$pwphome/pwp.cfg
+umask 077
 
 #Functions
 function getpwd {
@@ -84,22 +85,29 @@ then
 	exit 1
 fi
 
-
 #Read config file
-source ~/.pwp/pwp.cfg
-if [ $sys_type -eq 1 ]
+if [ -f $cfg ]
 	then 
-	#linux
-	clipcopy="xclip -selection clipboard"
-	clippaste="xclip -o -selection clipboard"
+	source ~/.pwp/pwp.cfg
+
+	if [ $sys_type -eq 1 ]
+		then 
+		#linux
+		clipcopy="xclip -selection clipboard"
+		clippaste="xclip -o -selection clipboard"
+	fi
+	if [ $sys_type -eq 2 ]
+		then
+		#mac
+		echo "Setting mode as Mac"
+		clipcopy="pbcopy"
+		clippaste="pbpaste"
+	fi	
+else
+	echo "$cfg not found, entering Configuration mode"
+	mode=5
 fi
-if [ $sys_type -eq 2 ]
-	then
-	#mac
-	echo "Setting mode as Mac"
-	clipcopy="pbcopy"
-	clippaste="pbpaste"
-fi	
+
 #Get mode. 
 if [ $mode -eq 1 ] 
 	then
