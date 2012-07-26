@@ -52,3 +52,19 @@ Example usage:
 		Edit the entries directly
 		=========================
 		$pwp edit
+
+		Configure defaults
+		===================
+		$pwp config
+
+Installation Instructions
+=========================
+		
+		1. Download pwp file
+		2. Put somewhere in your search path (ie. /usr/local/bin or /home/youruser/bin)
+		3. Mark pwp file as executable (eg. chmod u+x pwp)
+		4. Configure pwp (eg. pwp config)
+		5. Add entries (either by "pwp set" or directly via "pwp edit")
+		6. Test by using "pwp get" on one of your entries and see if it works correctly with clipboard
+
+
