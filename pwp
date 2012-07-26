@@ -95,9 +95,9 @@ if [ $mode -eq 1 ]
 	if [ -n "$user" ]
 		then
 		echo "User: $user"
-		lines=$(gpg -d $efile | grep $site | grep $user)
+		lines=$(gpg -q -d $efile | grep $site | grep $user)
 	else
-		lines=$(gpg -d $efile | grep $site)
+		lines=$(gpg -q -d $efile | grep $site)
 	fi
 	cnt=$(echo "$lines" | wc -l)
 	if [ $cnt -gt 1 ]
@@ -120,7 +120,7 @@ fi
 #Set mode. 
 if [ $mode -eq 2 ]
 	then
-	gpg -d $efile > $file
+	gpg -q -d $efile > $file
 	echo
 	echo
 	read -p "Enter username for this site: " user
@@ -133,26 +133,27 @@ if [ $mode -eq 2 ]
 		pass=$(getpwd)
 		echo $site $user $pass >> $file
 	fi
-	gpg -e --yes -r $gpg_user $file
+	gpg -q -e --yes -r $gpg_user $file
 	rm $file
 fi
 #List mode.
 if [ $mode -eq 3 ]
 	then
-	gpg -d $efile | awk '{print $1, $2}' | grep -v ^*
+	gpg -q -d $efile | awk '{print $1, $2}' | grep -v ^*
 fi
 #Edit mode.
 if [ $mode -eq 4 ]
 	then
-	gpg -d $efile > $file
+	gpg -q -d $efile > $file
 	vi $file
-	gpg -e --yes -r $gpg_user $file
+	gpg -q -e --yes -r $gpg_user $file
 	rm $file
 fi
 #Config mode.
 if [ $mode -eq 5 ]
 	then
 	#Add config file
+	mkdir ~/.pwp
 	do_config
 	echo "gpg_user=$gpg_user" > $cfg
 	echo "sys_type=$sys_type" >> $cfg
@@ -162,11 +163,10 @@ if [ $mode -eq 5 ]
 		echo "pwp file already exist."
 	else
 		echo "$efile doesn't exist, creating"
-		mkdir ~/.pwp
 		touch $file
 		#Put a salt in file to reduce empty file analysis 
 		echo "*$RANDOM $RANDOM $RANDOM $RANDOM" > $file
-		gpg -e --yes -r $gpg_user $file
+		gpg -q -e --yes -r $gpg_user $file
 		rm $file
 	fi
 fi
