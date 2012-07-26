@@ -22,7 +22,8 @@ What does it do for me?
 Requirements: 
 =============
 		gpg / gpg2
-		bash
+		bash / posix system
+		vi
 		some form of command-line clipboard management tools (xclip linux / pbpaste pbcopy on mac) 
 Example usage:
 ==============
@@ -48,4 +49,6 @@ Example usage:
 		===================
 		$pwp list
 
-
+		Edit the entries directly
+		=========================
+		$pwp edit

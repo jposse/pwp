@@ -8,6 +8,11 @@ function getpwd {
 	head -c500 /dev/urandom | LC_CTYPE=C tr -dc "A-Za-z0-9" | cut -c 1-8
 }
 
+function do_config {
+	echo "Writing config file"
+	read -p "Enter your gpg username: " gpg_user
+	read -p "System Type (1=linux, 2=mac): " sys_type
+}
 
 #Check to see if action is set
 mode=$1
@@ -36,6 +41,10 @@ if [ -n $mode ]
 			echo "Listing sites"
 			mode=3
 			;;
+		"edit")
+			echo "Editing file"
+			mode=4
+			;;
 		*)
 			echo "You need to specify a valid action: get / set / list"
 			exit 2
@@ -54,7 +63,7 @@ then
 	exit 1
 fi
 
-#Check to see if ~/.pwp/pw.asc exist
+#Check to see if ~/.pwp/pw.asc.gpg exist
 if [ -f $efile ]
 then
 	echo "Using $efile"
@@ -62,11 +71,19 @@ else
 	echo "$efile doesn't exist, creating"
 	mkdir ~/.pwp
 	touch $file
+	#Add config file
+	do_config
+	echo "gpg_user=$gpg_user" > ~/.pwp/pwp.cfg
+	echo "sys_type=$sys_type" >> ~/.pwp/pwp.cfg
 	#Put a salt in file to reduce empty file analysis 
 	echo "*$RANDOM $RANDOM $RANDOM $RANDOM" > $file
-	gpg -e $file
+	gpg -e -r $gpg_user $file
 	rm $file
+	
 fi
+
+#Read config file
+source ~/.pwp/pwp.cfg
 
 #Get mode. 
 if [ $mode -eq 1 ] 
@@ -115,4 +132,12 @@ fi
 if [ $mode -eq 3 ]
 	then
 	gpg -d $efile | awk '{print $1, $2}' | grep -v ^*
+fi
+#Edit mode.
+if [ $mode -eq 4 ]
+	then
+	gpg -d $efile > $file
+	vi $file
+	gpg -e $file
+	rm $file
 fi
