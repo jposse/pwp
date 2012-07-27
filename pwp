@@ -26,11 +26,11 @@ function print_usage {
 	echo
 	echo "Command ="
 	echo
-	echo "get:	get a password and put in paste buffer"
-	echo "set:	define a new password (if pw is left blank will be randomly generated)"
-	echo "list:	list all site / usernames in file"
+	echo "get:		get a password and put in paste buffer"
+	echo "set:		define a new password (if pw is left blank will be randomly generated)"
+	echo "list:		list all site / usernames in file"
 	echo "config: 	set configuration defaults (note: this must be completed first for pwp to function)"
-	echo "edit:	manually edit pwp file (via vi)"
+	echo "edit:		manually edit pwp file (via vi)"
 	echo
 }
 
@@ -160,7 +160,12 @@ fi
 #List mode.
 if [ $mode -eq 3 ]
 	then
-	gpg -q -d $efile | awk '{print $1, $2}' | grep -v ^*
+	thelist=$(gpg -q -d $efile | grep -v ^* | awk '{printf "%15s\t%-15s\n", $1, $2}')
+	echo
+	echo "Site name       |           User name"
+	echo "-------------------------------------"
+	echo "$thelist"
+	echo
 fi
 #Edit mode.
 if [ $mode -eq 4 ]
