@@ -128,6 +128,14 @@ if [ $mode -eq 1 ]
 	fi
 	usrname=$(echo "$lines" | awk '{print $2}')
 	pass=$(echo "$lines" | awk '{print $3}')
+	passlen=$(echo $pass | wc -c)
+	if [ $passlen -lt 2 ] 
+		then
+		echo
+		echo "Cannot find entry for that site / username"
+		exit 11
+		echo
+	fi 
 	echo 
 	echo "Username for this site is: $usrname"
 	oldclip=$(eval $clippaste)
