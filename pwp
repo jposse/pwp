@@ -164,6 +164,19 @@ if [ $mode -eq 2 ]
 	fi
 	gpg -q -e --yes -r $gpg_user $file
 	rm $file
+	echo
+	read -n 1 -p "Would you like to copy this password into clipboard for next 30 secs? (y/n): " yesno
+	if [ $yesno = "y" ]
+		then
+		oldclip=$(eval $clippaste)
+		printf "%s" $pass | eval $clipcopy
+		echo
+		echo "Password is now in clipboard buffer for next 30 secs"
+		sleep 30
+		echo "Buffer reset"
+		echo $oldclip | eval $clipcopy
+	fi
+	echo
 fi
 #List mode.
 if [ $mode -eq 3 ]
