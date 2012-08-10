@@ -122,16 +122,26 @@ if [ $mode -eq 1 ]
 	if [ -n "$user" ]
 		then
 		echo "User: $user"
-		lines=$(gpg -q -d $efile | grep $site | grep $user)
+		#linesfull=$(gpg -q -d $efile | grep $site | grep $user)
+		lines=$(gpg -q -d $efile | awk 'BEGIN {x=1}{print x": "$1" " $2" "$3; x++}' | grep $site | grep $user)
 	else
-		lines=$(gpg -q -d $efile | grep $site)
+		lines=$(gpg -q -d $efile | awk 'BEGIN {x=1}{print x": "$1" "$2" "$3; x++}' | grep $site)
+		#linesfull=$(gpg -q -d $efile | grep $site)
 	fi
 	cnt=$(echo "$lines" | wc -l)
 	if [ $cnt -gt 1 ]
 		then 
+		echo 
 		echo "More than one entry found for this site / username combination."
-		echo "Please run again with different user, or edit file manually using 'pwp edit' to fix"
-		exit 10
+		echo
+		echo "Please choose an entry below:"
+		cnt=0
+		for item in "$lines"
+			do
+			echo "$item" | awk '{print "Line "$1 " "$2" "$3}'
+			done
+		read -p "Please select specific line above to continue: " pickline
+		lines=$(echo "$lines" | grep $pickline | awk '{print $2" "$3" "$4" "}')
 	fi
 	usrname=$(echo "$lines" | awk '{print $2}')
 	pass=$(echo "$lines" | awk '{print $3}')
