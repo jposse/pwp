@@ -17,6 +17,7 @@ function do_config {
 	read -p "Enter your gpg username: " gpg_user
 	read -p "System Type (1=linux, 2=mac): " sys_type
 	read -p "Max length for randomly generated passwords (ie. 8): " pw_len
+	read -p "Hostname of remote site to push/pull pw database (ie. host.somesite.com:~/myhome/): [Note leave blank to skip]: " remote
 }
 
 function print_usage {
@@ -26,12 +27,14 @@ function print_usage {
 	echo
 	echo "Command ="
 	echo
-	echo "get:		get a password and put in paste buffer"
-	echo "set:		define a new password (if pw is left blank will be randomly generated)"
-	echo "list:		list all site / usernames in file"
-	echo "config: 	set configuration defaults (note: this must be completed first for pwp to function)"
-	echo "edit:		manually edit pwp file (via vi)"
+	echo "get:		Get a password and put in paste buffer"
+	echo "set:		Define a new password (if pw is left blank will be randomly generated)"
+	echo "list:		List all site / usernames in file"
+	echo "config: 	Set configuration defaults (note: this must be completed first for pwp to function)"
+	echo "edit:		Manually edit pwp file (via vi)"
 	echo "pw:		Just print out a random password"
+	echo "push:		Copy pwp database file to remote site"
+	echo "pull:		Copy pwp database from remote site locally"
 	echo
 }
 
@@ -222,6 +225,7 @@ if [ $mode -eq 5 ]
 	echo "gpg_user=$gpg_user" > $cfg
 	echo "sys_type=$sys_type" >> $cfg
 	echo "pw_len=$pw_len" >> $cfg
+	echo "remote=$remote" >> $cfg
 	echo "Checking to see if $efile exist..."
 	if [ -f $efile ]
 	then
