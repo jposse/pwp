@@ -17,7 +17,19 @@ function do_config {
 	read -p "Enter your gpg username: " gpg_user
 	read -p "System Type (1=linux, 2=mac): " sys_type
 	read -p "Max length for randomly generated passwords (ie. 8): " pw_len
-	read -p "Hostname of remote site to push/pull pw database (ie. host.somesite.com:~/myhome/): [Note leave blank to skip]: " remote
+	read -p "Hostname of remote site to push/pull pw database (ie. pwp@host.somesite.com:/home/user/): [Note leave blank to skip]: " remote
+	if [ -n "$remote" ]
+		then
+		read -p "Name of ssh identity file in .pwp directory (eg. id_pwp_rsa): " id_file
+	fi
+}
+
+function do_push {
+	scp -i $pwphome/$id_file $efile $remote
+}
+
+function do_pull {
+	scp -i $pwphome/$id_file $remote/pwp.asc.gpg $pwphome
 }
 
 function print_usage {
@@ -42,7 +54,9 @@ function print_usage {
 mode=$1
 site=$2
 if [ -n $mode ] 
-	then case $mode in
+	then
+	source ~/.pwp/pwp.cfg
+	case $mode in
 		"get")
 			echo "Get mode"
 			if [ -z $site ]
@@ -72,9 +86,16 @@ if [ -n $mode ]
 			mode=5
 			;;
 		"pw")
-			source ~/.pwp/pwp.cfg
 			pw=$(getpwd)
 			echo $pw
+			exit 0
+			;;
+		"push")
+			do_push
+			exit 0
+			;;
+		"pull")
+			do_pull
 			exit 0
 			;;
 		*)
@@ -227,6 +248,7 @@ if [ $mode -eq 5 ]
 	echo "sys_type=$sys_type" >> $cfg
 	echo "pw_len=$pw_len" >> $cfg
 	echo "remote=$remote" >> $cfg
+	echo "id_file=$id_file" >> $cfg
 	echo "Checking to see if $efile exist..."
 	if [ -f $efile ]
 	then
