@@ -24,6 +24,7 @@ Features:
 		Works on linux / mac / solaris
 		Simple operation
 		Just a bash script: you can easily verify not doing anything shady with your information 
+		Can copy pwp password files to/from remote sites so you can use one db file on multiple macs
 		
 
 Requirements: 
@@ -64,15 +65,22 @@ Example usage:
 		===================
 		$pwp config
 
+		Push / Pull pwp database to remote site
+		================================
+		$pwp push 	#(will push to remote site as defined in config)
+		$pwp pull 	#(will copy from remote site to local)
+	
+		
+		(note: this requires you to have a ssh id_rsa key setup on both machines - which is outside the scope of this document to explain)
+
 Installation Instructions
 =========================
 		
 		1. Download pwp file
-		2. Put somewhere in your search path (ie. /usr/local/bin or /home/youruser/bin)
-		3. Mark pwp file as executable (eg. chmod u+x pwp)
-		4. Configure pwp (eg. pwp config)
-		5. Add entries (either by "pwp set" or directly via "pwp edit")
-		6. Test by using "pwp get" on one of your entries and see if it works correctly with clipboard
+		2. Run "make install" (will put in /usr/local/bin)
+		3. Configure pwp (eg. pwp config)
+		4. Add entries (either by "pwp set" or directly via "pwp edit")
+		5. Test by using "pwp get" on one of your entries and see if it works correctly with clipboard
 
 Credits
 ========
