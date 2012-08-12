@@ -29,6 +29,8 @@ function do_push {
 }
 
 function do_pull {
+	sd=$(date +%s)
+	cp $efile $efile.$sd	
 	scp -i $pwphome/$id_file $remote/pwp.asc.gpg $pwphome
 }
 
