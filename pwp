@@ -167,10 +167,10 @@ if [ $mode -eq 1 ]
 			echo "$item" | awk '{print "Line "$1 " "$2" "$3}'
 			done
 		read -p "Please select specific line above to continue: " pickline
-		lines=$(echo "$lines" | grep $pickline | awk '{print $2" "$3" "$4" "}')
+		lines=$(echo "$lines" | grep $pickline)
 		echo $lines
 	fi
-	#lines=$(echo "$lines" | awk '{print $1" "$2" "$3" "}')
+	lines=$(echo "$lines" | awk '{print $2" "$3" "$4" "}')
 	usrname=$(echo "$lines" | awk '{print $2}')
 	pass=$(echo "$lines" | awk '{print $3}')
 	passlen=$(echo $pass | wc -c)
