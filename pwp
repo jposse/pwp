@@ -198,6 +198,9 @@ if [ $mode -eq 2 ]
 	echo
 	echo
 	read -p "Enter username for this site: " user
+	if [ -z "$user" ]
+		then user="(nil)"
+	fi
 	read -s -p "Enter password to set for this site (or leave blank to generate random password): " pass
 	if [ -n "$pass" ]
 		then 
