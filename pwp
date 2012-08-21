@@ -24,6 +24,21 @@ function do_config {
 	fi
 }
 
+function do_sync {
+	scp -i $pwphome/$id_file $remote/pwp.asc.gpg $pwphome/pwp.remote.gpg
+	gpg -q -d $pwphome/pwp.remote.gpg > $pwphome/pwp.remote.asc
+	gpg -q -d $efile > $pwphome/pwp.local.asc
+	cat $pwphome/pwp.local.asc $pwphome/pwp.remote.asc > $pwphome/pwp.merge.asc
+	cat $pwphome/pwp.merge.asc | sort | uniq > $file
+	sd=$(date +%s)
+	cp $efile $efile.$sd
+	gpg -q -e --yes -r $gpg_user $file
+	do_push
+	rm $pwphome/*.asc
+	rm $pwphome/pwp.remote.gpg
+}
+	
+
 function do_push {
 	scp -i $pwphome/$id_file $efile $remote
 }
@@ -49,6 +64,7 @@ function print_usage {
 	echo "pw:		Just print out a random password"
 	echo "push:		Copy pwp database file to remote site"
 	echo "pull:		Copy pwp database from remote site locally"
+	echo "sync:		Sync (merge) local and remote databases - copy result back to remote site"
 	echo
 }
 
@@ -98,6 +114,10 @@ if [ -n $mode ]
 			;;
 		"pull")
 			do_pull
+			exit 0
+			;;
+		"sync")
+			do_sync
 			exit 0
 			;;
 		*)
