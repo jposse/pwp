@@ -262,6 +262,7 @@ if [ $mode -eq 3 ]
 	echo "-------------------------------------"
 	echo "$thelist"
 	echo
+	exit 0
 fi
 #Edit mode.
 if [ $mode -eq 4 ]
@@ -295,3 +296,5 @@ if [ $mode -eq 5 ]
 		rm $file
 	fi
 fi
+
+clear
