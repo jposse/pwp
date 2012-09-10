@@ -24,6 +24,7 @@ function do_config {
 	fi
 }
 
+
 function do_sync {
 	scp -i $pwphome/$id_file $remote/pwp.asc.gpg $pwphome/pwp.remote.gpg
 	gpg -q -d $pwphome/pwp.remote.gpg > $pwphome/pwp.remote.asc
@@ -36,6 +37,12 @@ function do_sync {
 	do_push
 	rm $pwphome/*.asc
 	rm $pwphome/pwp.remote.gpg
+	dlist=$(find $pwphome -atime +14d -name 'pwp.asc.gpg.*')
+	touch $efile
+	for item in $dlist;
+		do echo "Deleting $item"
+		rm -f $item
+	done;
 }
 	
 
