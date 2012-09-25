@@ -69,8 +69,8 @@ function print_usage {
 	echo "config: 	Set configuration defaults (note: this must be completed first for pwp to function)"
 	echo "edit:		Manually edit pwp file (via vi)"
 	echo "pw:		Just print out a random password"
-	#echo "push:		Copy pwp database file to remote site"
-	#echo "pull:		Copy pwp database from remote site locally"
+	echo "push:		Copy pwp database file to remote site"
+	echo "pull:		Copy pwp database from remote site locally"
 	echo "sync:		Sync (merge) local and remote databases - copy result back to remote site"
 	echo
 }
@@ -115,14 +115,14 @@ if [ -n $mode ]
 			echo $pw
 			exit 0
 			;;
-		#"push")
-		#	do_push
-		#	exit 0
-		#	;;
-		#"pull")
-		#	do_pull
-		#	exit 0
-		#	;;
+		"push")
+			do_push
+			exit 0
+			;;
+		"pull")
+			do_pull
+			exit 0
+			;;
 		"sync")
 			do_sync
 			exit 0
