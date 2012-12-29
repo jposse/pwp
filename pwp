@@ -27,7 +27,15 @@ function do_config {
 
 function do_sync {
 	scp -i $pwphome/$id_file $remote/pwp.asc.gpg $pwphome/pwp.remote.gpg
+	if [ $? -gt 0 ]
+		then echo "SCP Failed: Exiting"
+		exit 1
+	fi
 	gpg -q -d $pwphome/pwp.remote.gpg > $pwphome/pwp.remote.asc
+	if [ $? -gt 0 ]
+		then echo "GPG Password Failed: Exiting"
+		exit 1
+	fi
 	gpg -q -d $efile > $pwphome/pwp.local.asc
 	cat $pwphome/pwp.local.asc $pwphome/pwp.remote.asc > $pwphome/pwp.merge.asc
 	cat $pwphome/pwp.merge.asc | sort | uniq > $file
