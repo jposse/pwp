@@ -7,6 +7,7 @@ efile=$file.gpg
 cfg=$pwphome/pwp.cfg
 umask 077
 
+
 #Functions
 function getpwd {
 	head -c500 /dev/urandom | LC_CTYPE=C tr -dc "A-Za-z0-9" | cut -c 1-$pw_len
@@ -279,6 +280,7 @@ if [ $mode -eq 4 ]
 	vi $file
 	gpg -q -e --yes -r $gpg_user $file
 	rm $file
+	rm *.swp
 fi
 #Config mode.
 if [ $mode -eq 5 ]
