@@ -280,7 +280,7 @@ if [ $mode -eq 4 ]
 	vi $file
 	gpg -q -e --yes -r $gpg_user $file
 	rm $file
-	rm .*.swp
+	rm ~/.pwp/.*.swp
 fi
 #Config mode.
 if [ $mode -eq 5 ]
