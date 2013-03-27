@@ -203,7 +203,7 @@ if [ $mode -eq 1 ]
 			echo "$item" | awk '{print "Line "$1 " "$2" "$3}'
 			done
 		read -p "Please select specific line above to continue: " pickline
-		lines=$(echo "$lines" | grep $pickline)
+		lines=$(echo "$lines" | grep ^$pickline)
 		#echo $lines
 	fi
 	lines=$(echo "$lines" | awk '{print $2" "$3" "$4" "}')
